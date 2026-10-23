@@ -138,13 +138,13 @@ async function textLayer(pg,ov,cv){
   else if(it.str.trim()){const fi=fontInfo(pg,tc,it.fontName);mc.font=(fi.i?'italic ':'')+(fi.b?'bold ':'')+fh+'px '+CSSF[fi.ff];const tot=mc.measureText(it.str).width||1,k=w/tot;for(const m of it.str.matchAll(/\S+/g))runs.push({s:m[0],x:t[4]+mc.measureText(it.str.slice(0,m.index)).width*k,y:t[5],fh,ff:fi.ff,lf:fi.lf,fd:fi.fd,b:fi.b,i:fi.i,w:mc.measureText(m[0]).width*k})}}
  const ph=[];for(const r of runs){const p=ph[ph.length-1],gp=p?r.x-(p.x+p.w):0;if(p&&Math.abs(p.y-r.y)<2&&Math.abs(p.fh-r.fh)<1.5&&p.ff==r.ff&&p.lf==r.lf&&p.b==r.b&&p.i==r.i&&gp<r.fh*.7&&gp>-r.fh*.3&&!/[:;]$/.test(p.s)){p.s+=' '+r.s;p.w=r.x+r.w-p.x}else ph.push({...r})}
  for(const r of ph){const s=r.s.trim();if(!s||/[^\x00-\xFF]/.test(s)||r.fh<4)continue;
-  const L=r.x-1,T=r.y-r.fh*.98,W=r.w+2,Hh=r.fh*1.28,d=document.createElement('div');d.className='ti';d.title='Click to edit';
+  const L=r.x-1,T=r.y-r.fh*.98,W=r.w+2,Hh=r.fh*1.28,CT=r.y-r.fh*.77,CH=r.fh*.98,d=document.createElement('div');d.className='ti';d.title='Click to edit';
   Object.assign(d.style,{left:L+'px',top:T+'px',width:W+'px',height:Hh+'px'});
   d.onclick=()=>{d.style.display='none';let b=[255,255,255],col='#000000';
-   try{b=[...g.getImageData(Math.max(0,Math.min(cv.width-1,((L-3)*Q)|0)),Math.max(0,Math.min(cv.height-1,((T+Hh/2)*Q)|0)),1,1).data];
-    const x0=Math.max(0,(L*Q)|0),y0=Math.max(0,(T*Q)|0),im=g.getImageData(x0,y0,Math.max(1,Math.min((W*Q)|0,cv.width-x0)),Math.max(1,Math.min((Hh*Q)|0,cv.height-y0))).data;let md=-1,c2=[0,0,0];
+   try{b=[...g.getImageData(Math.max(0,Math.min(cv.width-1,((L-3)*Q)|0)),Math.max(0,Math.min(cv.height-1,((CT+CH/2)*Q)|0)),1,1).data];
+    const x0=Math.max(0,(L*Q)|0),y0=Math.max(0,(CT*Q)|0),im=g.getImageData(x0,y0,Math.max(1,Math.min((W*Q)|0,cv.width-x0)),Math.max(1,Math.min((CH*Q)|0,cv.height-y0))).data;let md=-1,c2=[0,0,0];
     for(let i=0;i<im.length;i+=4){const q=Math.abs(im[i]-b[0])+Math.abs(im[i+1]-b[1])+Math.abs(im[i+2]-b[2]);if(q>md){md=q;c2=[im[i],im[i+1],im[i+2]]}}col=hx(c2)}catch(e){}
-   const bg=hx(b.slice(0,3)),cov=mk(ov,'white',L,T,W,Hh);cov.classList.add('cover');cov.style.background=bg;cov.dataset.bg=bg;
+   const bg=hx(b.slice(0,3)),cov=mk(ov,'white',L+.5,CT,W-1,CH);cov.classList.add('cover');cov.style.background=bg;cov.dataset.bg=bg;
    const a=mk(ov,'text',r.x,r.y-r.fh);a.style.fontSize=r.fh+'px';a.style.color=col;a.dataset.fs=(r.fh/S).toFixed(2);a.dataset.c=col;a.dataset.ff=r.ff;a.dataset.b=r.b;a.dataset.i=r.i;if(r.fd){a._fd=r.fd;a.dataset.lf=r.lf}applyFont(a);
    const tx=a.querySelector('.tx');tx.textContent=s;tx.focus();getSelection().selectAllChildren(tx);
    tx.onblur=()=>{if(!ed.keep&&tx.innerText.replace(/\n$/,'')===s){cov.remove();a.remove();d.style.display=''}}};
