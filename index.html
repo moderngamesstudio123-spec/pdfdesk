@@ -140,11 +140,15 @@ async function textLayer(pg,ov,cv){
  for(const r of ph){const s=r.s.trim();if(!s||/[^\x00-\xFF]/.test(s)||r.fh<4)continue;
   const L=r.x-1,T=r.y-r.fh*.98,W=r.w+2,Hh=r.fh*1.28,CT=r.y-r.fh*.77,CH=r.fh*.98,d=document.createElement('div');d.className='ti';d.title='Click to edit';
   Object.assign(d.style,{left:L+'px',top:T+'px',width:W+'px',height:Hh+'px'});
-  d.onclick=()=>{d.style.display='none';let b=[255,255,255],col='#000000';
+  d.onclick=()=>{d.style.display='none';let b=[255,255,255],col='#000000',ct=CT,ch=CH;
    try{b=[...g.getImageData(Math.max(0,Math.min(cv.width-1,((L-3)*Q)|0)),Math.max(0,Math.min(cv.height-1,((CT+CH/2)*Q)|0)),1,1).data];
-    const x0=Math.max(0,(L*Q)|0),y0=Math.max(0,(CT*Q)|0),im=g.getImageData(x0,y0,Math.max(1,Math.min((W*Q)|0,cv.width-x0)),Math.max(1,Math.min((CH*Q)|0,cv.height-y0))).data;let md=-1,c2=[0,0,0];
+    const x0=Math.max(0,(L*Q)|0),y0=Math.max(0,(T*Q)|0),im=g.getImageData(x0,y0,Math.max(1,Math.min((W*Q)|0,cv.width-x0)),Math.max(1,Math.min((Hh*Q)|0,cv.height-y0))).data;const iw=Math.max(1,Math.min((W*Q)|0,cv.width-x0)),ih=(im.length/4/iw)|0;let r0=-1,r1=-1;
+    for(let yy=0;yy<ih;yy++){let c=0;for(let xx=0;xx<iw;xx++){const o=(yy*iw+xx)*4;if(Math.abs(im[o]-b[0])+Math.abs(im[o+1]-b[1])+Math.abs(im[o+2]-b[2])>60)c++}
+     if(c>iw*.8||c==0){for(let xx=0;xx<iw;xx++){const o=(yy*iw+xx)*4;im[o]=b[0];im[o+1]=b[1];im[o+2]=b[2]}}else{if(r0<0)r0=yy;r1=yy}}
+    if(r0>=0){ct=(y0+r0)/Q-.7;ch=(r1-r0+1)/Q+1.4}
+    let md=-1,c2=[0,0,0];
     for(let i=0;i<im.length;i+=4){const q=Math.abs(im[i]-b[0])+Math.abs(im[i+1]-b[1])+Math.abs(im[i+2]-b[2]);if(q>md){md=q;c2=[im[i],im[i+1],im[i+2]]}}col=hx(c2)}catch(e){}
-   const bg=hx(b.slice(0,3)),cov=mk(ov,'white',L+.5,CT,W-1,CH);cov.classList.add('cover');cov.style.background=bg;cov.dataset.bg=bg;
+   const bg=hx(b.slice(0,3)),cov=mk(ov,'white',L+.5,ct,W-1,ch);cov.classList.add('cover');cov.style.background=bg;cov.dataset.bg=bg;
    const a=mk(ov,'text',r.x,r.y-r.fh);a.style.fontSize=r.fh+'px';a.style.color=col;a.dataset.fs=(r.fh/S).toFixed(2);a.dataset.c=col;a.dataset.ff=r.ff;a.dataset.b=r.b;a.dataset.i=r.i;if(r.fd){a._fd=r.fd;a.dataset.lf=r.lf}applyFont(a);
    const tx=a.querySelector('.tx');tx.textContent=s;tx.focus();getSelection().selectAllChildren(tx);
    tx.onblur=()=>{if(!ed.keep&&tx.innerText.replace(/\n$/,'')===s){cov.remove();a.remove();d.style.display=''}}};
